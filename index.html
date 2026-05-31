@@ -432,11 +432,11 @@ function CookView({ recipe, onClose, onSaveRecipe }){
   const [editing,setEditing]=useState(false);
   const [serv,setServ]=useState(recipe.servings);
   const [done,setDone]=useState({});
+  const fileRef=useRef();
   if(editing) return <Review draft={JSON.parse(JSON.stringify(recipe))} editing={true} onCancel={()=>setEditing(false)} onSave={(d)=>{ onSaveRecipe({...d,id:recipe.id}); setEditing(false); }} />;
   const scale = serv/recipe.servings;
   const cats = recipe.categories&&recipe.categories.length?recipe.categories:["Other"];
   const [bg]=CAT_COLOR[cats[0]]||CAT_COLOR.Other;
-  const fileRef=useRef();
   const photo=recipe.photo;
   const headStyle = photo
     ? { backgroundImage:`linear-gradient(to top, rgba(20,40,30,.82), rgba(20,40,30,.2)), url(${photo})`, backgroundSize:"cover", backgroundPosition:"center" }
