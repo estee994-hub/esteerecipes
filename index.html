@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Estee's Pantry</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Hanken+Grotesk:wght@400;500;600;700&display=swap');
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #E3E8DB; --bg2: #DAE1CE; --card: #FFFFFF; --ink: #1F3A29;
+  --soft: #5E6B57; --line: #C9D2BD; --accent: #66723A; --accent2: #4C5A2C;
+  --sage: #7D9461; --gold: #A86E47; --peach: #EBC3A4; --forest: #154E2C;
+  --blush: #FFE8F1; --blush-deep: #B06A85;
+}
+body {
+  font-family: 'Hanken Grotesk', sans-serif; color: var(--ink);
+  background: var(--bg); min-height: 100vh; line-height: 1.5;
+  background-image: radial-gradient(circle at 12% 18%, rgba(102,114,58,.05), transparent 42%),
+                    radial-gradient(circle at 88% 82%, rgba(255,232,241,.55), transparent 46%);
+}
+h1,h2,h3,.serif { font-family: 'Fraunces', serif; }
+button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+.wrap { max-width: 1080px; margin: 0 auto; padding: 22px 22px 80px; }
+.top { display:flex; align-items:flex-end; justify-content:space-between; gap:16px; padding-bottom:18px; border-bottom: 1px solid var(--line); margin-bottom: 22px; flex-wrap: wrap; }
+.brand { font-family:'Fraunces',serif; font-size: 32px; font-weight:600; letter-spacing:-.6px; line-height:1; }
+.sub { font-size:11px; letter-spacing:3px; text-transform:uppercase; color:var(--blush-deep); font-weight:700; margin-top:6px; }
+.nav { display:flex; gap:4px; background: var(--bg2); padding:5px; border-radius: 14px; }
+.nav button { padding:9px 15px; border-radius:10px; font-size:14px; font-weight:600; color:var(--soft); transition:.18s; }
+.nav button.on { background: var(--card); color:var(--ink); box-shadow: 0 1px 3px rgba(31,58,41,.14); }
+.grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(240px,1fr)); gap:18px; }
+.card { background: var(--card); border:1px solid var(--line); border-radius:18px; overflow:hidden; cursor:pointer; transition:.2s; display:flex; flex-direction:column; animation: rise .5s both; }
+.card:hover { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(31,58,41,.14); border-color: #b9c4a8; }
+.card-top { height: 96px; display:flex; align-items:flex-end; padding:12px 14px; position:relative; }
+.card-body { padding: 14px 16px 18px; }
+.card h3 { font-size:20px; font-weight:600; line-height:1.15; letter-spacing:-.3px; }
+.meta { display:flex; gap:12px; margin-top:8px; font-size:13px; color:var(--soft); }
+.meta b { color:var(--ink); font-weight:600; }
+.chip { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.6px; padding:4px 9px; border-radius:20px; }
+.btn { background: var(--ink); color:#fff; padding:11px 18px; border-radius:12px; font-weight:600; font-size:14px; transition:.18s; }
+.btn:hover { background:#28553a; }
+.btn.accent { background: var(--accent); } .btn.accent:hover { background: var(--accent2); }
+.btn.ghost { background: transparent; border:1px solid var(--line); color:var(--ink); }
+.btn.ghost:hover { background: var(--bg2); }
+.btn.pink { background: var(--blush-deep); } .btn.pink:hover { background:#955875; }
+.btn:disabled { opacity:.5; cursor:not-allowed; }
+.filters { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:14px; }
+.pill { padding:7px 13px; border-radius:20px; font-size:13px; font-weight:600; border:1px solid var(--line); background:var(--card); color:var(--soft); transition:.15s; }
+.pill.on { background:var(--ink); color:#fff; border-color:var(--ink); }
+.label { font-size:11px; text-transform:uppercase; letter-spacing:1.5px; color:var(--soft); font-weight:700; min-width:74px; }
+.filterbar { background: var(--blush); border:1px solid #FBD8E6; border-radius:16px; padding:14px 16px 4px; margin-bottom:22px; }
+.filterbar .filters:last-child { margin-bottom:10px; }
+.sugg { display:flex; gap:8px; flex-wrap:wrap; }
+.sugg button { padding:6px 12px; border-radius:18px; font-size:13px; font-weight:600; border:1px dashed var(--line); background:var(--card); color:var(--soft); transition:.15s; }
+.sugg button:hover { border-color:var(--accent); color:var(--accent); border-style:solid; }
+.sugg button.used { opacity:.4; }
+.panel { background:var(--card); border:1px solid var(--line); border-radius:20px; padding:26px; }
+.input, .area { width:100%; background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:12px 14px; font-family:inherit; font-size:15px; color:var(--ink); }
+.input:focus, .area:focus { outline:none; border-color:var(--accent); }
+.area { resize:vertical; min-height:120px; line-height:1.6; }
+.ing { display:flex; gap:10px; align-items:center; padding:10px 0; border-bottom:1px dashed var(--line); cursor:pointer; }
+.ing:last-child{border-bottom:none;}
+.box { width:20px; height:20px; border:2px solid var(--line); border-radius:6px; flex-shrink:0; display:flex; align-items:center; justify-content:center; transition:.15s; font-size:12px; }
+.ing.done .box { background:var(--sage); border-color:var(--sage); color:#fff; }
+.ing.done span { text-decoration:line-through; color:var(--soft); }
+.step { display:flex; gap:18px; padding:18px 0; border-bottom:1px solid var(--line); }
+.step:last-child{border-bottom:none;}
+.num { font-family:'Fraunces',serif; font-size:30px; color:var(--accent); font-weight:500; line-height:1; min-width:42px; }
+.step p { font-size:18px; line-height:1.6; }
+.tag-add { display:inline-flex; gap:6px; align-items:center; background:var(--sage); color:#fff; padding:5px 10px; border-radius:18px; font-size:13px; font-weight:600; }
+.tag-add button { color:#fff; opacity:.85; font-weight:700; }
+.empty { text-align:center; padding:60px 20px; color:var(--soft); }
+.empty h2 { font-size:26px; color:var(--ink); margin-bottom:8px; }
+.day { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:16px; }
+.day h4 { font-family:'Fraunces',serif; font-size:18px; margin-bottom:12px; }
+.slot { margin-bottom:10px; }
+.slotlabel { font-size:10px; text-transform:uppercase; letter-spacing:1.2px; color:var(--accent); font-weight:700; display:block; margin-bottom:3px; }
+.daypick { width:100%; background:var(--bg); border:1px solid var(--line); border-radius:9px; padding:8px 9px; font-family:inherit; font-size:13px; color:var(--ink); }
+.daynote { margin-top:8px; font-size:12px; line-height:1.4; padding-top:10px; border-top:1px dashed var(--line); }
+.note { background: rgba(102,114,58,.12); border:1px solid rgba(102,114,58,.32); color:#3f4f29; padding:12px 16px; border-radius:12px; font-size:14px; font-weight:500; }
+.check { display:inline-flex; align-items:center; gap:6px; padding:6px 12px; border-radius:18px; border:1px solid var(--line); font-size:13px; font-weight:600; color:var(--soft); cursor:pointer; }
+.check.on { background:var(--accent); color:#fff; border-color:var(--accent); }
+.code { background:var(--bg2); border:1px solid var(--line); border-radius:12px; padding:14px; font-family:ui-monospace,monospace; font-size:12px; line-height:1.5; white-space:pre-wrap; color:#3f4a35; max-height:180px; overflow:auto; }
+@keyframes rise { from{opacity:0; transform:translateY(12px);} to{opacity:1; transform:none;} }
+.spin { width:18px;height:18px;border:2.5px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;display:inline-block;animation:sp .7s linear infinite;vertical-align:-3px;margin-right:8px;}
+@keyframes sp{to{transform:rotate(360deg);}}
+.cook-grid { display:grid; grid-template-columns: 320px 1fr; gap:40px; }
+@media (max-width:760px){ .cook-grid{ grid-template-columns:1fr; gap:20px;} .nav button{padding:8px 11px;font-size:13px;} }
+.syncdot { display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--sage); margin-right:6px; vertical-align:1px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<script type="text/babel" data-presets="react">
+const { useState, useEffect, useMemo, useRef } = React;
+
+/* ============================================================
+   STEP 1 SETUP  —  paste your two Supabase values between the quotes.
+   You get these from supabase.com → your project → Settings → API.
+   ============================================================ */
+const SUPABASE_URL = "YOUR_SUPABASE_URL_HERE";
+const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY_HERE";
+/* ============================================================ */
+
+const configured = SUPABASE_URL.startsWith("http") && SUPABASE_ANON_KEY.length > 20;
+let sb = null;
+if (configured) { try { sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); } catch (e) { console.error(e); } }
+
+// ---------- constants ----------
+const CATS = ["Mains", "Soups", "Salads", "Cakes", "Cookies", "Sides", "Drinks", "Other"];
+const CAT_COLOR = {
+  Mains: ["#D5DCC3", "#505a30"], Soups: ["#D9E1CE", "#566b3a"], Salads: ["#DEE7D0", "#4f6630"],
+  Cakes: ["#F0D6D9", "#9c5f68"], Cookies: ["#F0DBC6", "#9c6a45"], Sides: ["#E8E2D2", "#6b6243"],
+  Drinks: ["#D7E1DB", "#46604f"], Other: ["#E2E1D3", "#5f6451"],
+};
+const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+const SLOTS = [["breakfast", "Breakfast"], ["lunch", "Lunch"], ["dinner", "Dinner"], ["snack", "Snacks"], ["dessert", "Dessert"]];
+const inferMeals = (cats) => { const c = cats || []; return (c.includes("Cakes") || c.includes("Cookies")) ? ["dessert", "snack"] : c.includes("Drinks") ? ["snack"] : ["lunch", "dinner"]; };
+const VEG = ["tomato","lettuce","spinach","carrot","broccoli","cucumber","pepper","onion","courgette","zucchini","kale","salad","bean","pea","cabbage","mushroom","celery","leek","green","avocado","beet","squash","cauliflower","corn","asparagus","berries","fruit","apple","banana"];
+const PROT = ["chicken","beef","pork","lamb","fish","salmon","tuna","egg","tofu","bean","lentil","chickpea","turkey","prawn","shrimp","cheese","yogurt","tempeh","nut","tahini"];
+const CARB = ["pasta","rice","potato","bread","noodle","flour","oat","quinoa","tortilla","bun","couscous","cracker","sugar"];
+
+const SEED = [
+  { id: "s5", title: "Overnight Oats & Berries", categories: ["Other"], meals: ["breakfast"], timeMinutes: 5, servings: 1, photo: null,
+    ingredients: [ {name:"oats",amount:50,unit:"g",display:"50 g rolled oats"},{name:"milk",amount:150,unit:"ml",display:"150 ml milk"},{name:"yogurt",amount:2,unit:"tbsp",display:"2 tbsp yogurt"},{name:"honey",amount:1,unit:"tbsp",display:"1 tbsp honey"},{name:"berries",amount:1,unit:"cup",display:"1 cup mixed berries"} ],
+    steps: ["Stir oats, milk, yogurt and honey together in a jar.","Chill overnight.","Top with berries before eating."], notes: "" },
+  { id: "s1", title: "Roasted Tomato & Basil Soup", categories: ["Soups"], meals: ["lunch","dinner"], timeMinutes: 45, servings: 4, photo: null,
+    ingredients: [ {name:"tomato",amount:8,unit:null,display:"8 ripe tomatoes, halved"},{name:"onion",amount:1,unit:null,display:"1 onion, quartered"},{name:"garlic",amount:4,unit:null,display:"4 garlic cloves"},{name:"olive oil",amount:3,unit:"tbsp",display:"3 tbsp olive oil"},{name:"basil",amount:1,unit:"cup",display:"1 cup fresh basil"},{name:"vegetable stock",amount:500,unit:"ml",display:"500 ml vegetable stock"} ],
+    steps: ["Heat oven to 200°C. Toss tomatoes, onion and garlic with olive oil on a tray.","Roast 30 minutes until soft and caramelised.","Blend the roasted veg with the stock and most of the basil until smooth.","Warm through, season, finish with torn basil."], notes: "" },
+  { id: "s2", title: "Lemon Herb Chicken Traybake", categories: ["Mains"], meals: ["lunch","dinner"], timeMinutes: 55, servings: 4, photo: null,
+    ingredients: [ {name:"chicken thigh",amount:8,unit:null,display:"8 chicken thighs"},{name:"potato",amount:6,unit:null,display:"6 potatoes, chunked"},{name:"lemon",amount:2,unit:null,display:"2 lemons"},{name:"garlic",amount:6,unit:null,display:"6 garlic cloves"},{name:"olive oil",amount:2,unit:"tbsp",display:"2 tbsp olive oil"},{name:"rosemary",amount:2,unit:"tbsp",display:"2 tbsp rosemary"} ],
+    steps: ["Heat oven to 200°C.","Toss potatoes, garlic and lemon wedges with oil in a roasting tin.","Nestle chicken on top, scatter rosemary, season well.","Roast 45–50 minutes until golden."], notes: "Squeeze the roasted lemon over before serving." },
+  { id: "s3", title: "Crunchy Chickpea Salad", categories: ["Salads","Mains"], meals: ["lunch"], timeMinutes: 15, servings: 2, photo: null,
+    ingredients: [ {name:"chickpeas",amount:1,unit:"can",display:"1 can chickpeas, drained"},{name:"cucumber",amount:1,unit:null,display:"1 cucumber, diced"},{name:"tomato",amount:2,unit:null,display:"2 tomatoes, diced"},{name:"red onion",amount:1,unit:null,display:"1/2 red onion, sliced"},{name:"lemon",amount:1,unit:null,display:"1 lemon, juiced"},{name:"olive oil",amount:2,unit:"tbsp",display:"2 tbsp olive oil"} ],
+    steps: ["Combine chickpeas, cucumber, tomato and onion in a bowl.","Whisk lemon juice with olive oil, salt and pepper.","Dress, toss, rest 5 minutes."], notes: "" },
+  { id: "s4", title: "Quick Garlic Butter Pasta", categories: ["Mains"], meals: ["lunch","dinner"], timeMinutes: 12, servings: 2, photo: null,
+    ingredients: [ {name:"pasta",amount:200,unit:"g",display:"200 g spaghetti"},{name:"garlic",amount:3,unit:null,display:"3 garlic cloves, sliced"},{name:"butter",amount:50,unit:"g",display:"50 g butter"},{name:"parmesan",amount:40,unit:"g",display:"40 g parmesan, grated"},{name:"parsley",amount:2,unit:"tbsp",display:"2 tbsp parsley"} ],
+    steps: ["Boil pasta in salted water until al dente.","Melt butter, soften garlic gently — don't brown it.","Toss drained pasta in the garlic butter with a splash of pasta water.","Finish with parmesan and parsley."], notes: "" },
+  { id: "s6", title: "Vanilla Bean Cookies", categories: ["Cookies"], meals: ["dessert","snack"], timeMinutes: 25, servings: 12, photo: null,
+    ingredients: [ {name:"butter",amount:120,unit:"g",display:"120 g soft butter"},{name:"sugar",amount:100,unit:"g",display:"100 g sugar"},{name:"flour",amount:200,unit:"g",display:"200 g plain flour"},{name:"egg",amount:1,unit:null,display:"1 egg"},{name:"vanilla",amount:1,unit:"tsp",display:"1 tsp vanilla"} ],
+    steps: ["Cream butter and sugar until pale.","Beat in egg and vanilla, then fold in flour.","Roll into balls, flatten on a lined tray.","Bake at 180°C for 11–13 minutes until edges turn gold."], notes: "" },
+];
+
+// ---------- helpers ----------
+const norm = (s) => (s || "").toLowerCase().trim();
+const fmtAmt = (n) => { if (n == null) return ""; return String(Math.round(n * 100) / 100); };
+const fmtScaled = (n) => {
+  if (n == null) return "";
+  const whole = Math.floor(n); const frac = n - whole;
+  const eighth = Math.round(frac * 8) / 8;
+  const map = { 0.125:"⅛",0.25:"¼",0.375:"⅜",0.5:"½",0.625:"⅝",0.75:"¾",0.875:"⅞" };
+  if (eighth === 1) return String(whole + 1);
+  const fsym = map[eighth];
+  if (n < 10 && fsym) return whole ? `${whole}${fsym}` : fsym;
+  return String(Math.round(n * 100) / 100);
+};
+function timeBand(m){ if(m<=15)return "≤ 15 min"; if(m<=30)return "15–30 min"; if(m<=60)return "30–60 min"; return "1 hr +"; }
+const BANDS = ["≤ 15 min","15–30 min","30–60 min","1 hr +"];
+
+function compressImage(file, cb){
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (e)=>{ const img = new Image();
+    img.onload = ()=>{ const max=900; let w=img.width,h=img.height;
+      if(w>h&&w>max){h=Math.round(h*max/w);w=max;} else if(h>=w&&h>max){w=Math.round(w*max/h);h=max;}
+      const c=document.createElement("canvas"); c.width=w; c.height=h; c.getContext("2d").drawImage(img,0,0,w,h);
+      try{ cb(c.toDataURL("image/jpeg",0.72)); }catch(_){ cb(e.target.result); } };
+    img.src=e.target.result; };
+  reader.readAsDataURL(file);
+}
+
+function normalizeDraft(p){
+  p.timeMinutes = Number(p.timeMinutes)||30;
+  p.servings = Number(p.servings)||2;
+  p.ingredients = (p.ingredients||[]).map(i=>({ name:i.name||"", amount:(i.amount==null||i.amount==="")?null:Number(i.amount), unit:i.unit||null, display:i.display||i.name||"" }));
+  p.steps = p.steps||[];
+  let cats = Array.isArray(p.categories)?p.categories:(p.category?[p.category]:[]);
+  cats = cats.filter(c=>CATS.includes(c)); if(!cats.length) cats=["Other"];
+  p.categories = cats; delete p.category;
+  const valid = ["breakfast","lunch","dinner","snack","dessert"];
+  p.meals = Array.isArray(p.meals)?p.meals.filter(m=>valid.includes(m)):[];
+  if(!p.meals.length) p.meals = inferMeals(p.categories);
+  p.notes = p.notes||"";
+  if(p.photo===undefined) p.photo=null;
+  return p;
+}
+
+// ---------- data layer (Supabase) ----------
+async function dbLoadRecipes(){ const { data, error } = await sb.from("recipes").select("doc, updated_at").order("updated_at",{ascending:false}); if(error) throw error; return (data||[]).map(r=>r.doc); }
+async function dbSaveRecipe(doc){ const { error } = await sb.from("recipes").upsert({ id: doc.id, doc, updated_at: new Date().toISOString() }); if(error) throw error; }
+async function dbDeleteRecipe(id){ const { error } = await sb.from("recipes").delete().eq("id", id); if(error) throw error; }
+async function dbLoadPlan(){ const { data } = await sb.from("app_state").select("value").eq("key","plan").maybeSingle(); return data ? data.value : {}; }
+async function dbSavePlan(plan){ await sb.from("app_state").upsert({ key:"plan", value: plan }); }
+
+// ============================================================
+function App(){
+  if(!configured || !sb) return <SetupScreen />;
+  return <RecipeBook />;
+}
+
+function SetupScreen(){
+  return (
+    <div className="wrap">
+      <div className="top"><div><div className="brand">Estee's Pantry</div><div className="sub">Recipe Book</div></div></div>
+      <div className="panel" style={{maxWidth:680}}>
+        <h2 className="serif" style={{fontSize:26,marginBottom:10}}>Almost there — one setup step</h2>
+        <p style={{color:"var(--soft)",marginBottom:16}}>This site needs to be connected to your free Supabase database so the whole family shares one recipe book. Open this file in a text editor and paste your two values near the top, where it says <b>STEP 1 SETUP</b>:</p>
+        <div className="code">const SUPABASE_URL = "https://xxxxx.supabase.co";{"\n"}const SUPABASE_ANON_KEY = "eyJhbGci...your long key...";</div>
+        <p style={{color:"var(--soft)",marginTop:16,fontSize:14}}>You'll find both at supabase.com → your project → Settings → API. Save the file and refresh — this screen disappears once the values are in.</p>
+      </div>
+    </div>
+  );
+}
+
+function RecipeBook(){
+  const [recipes, setRecipes] = useState(null);
+  const [plan, setPlan] = useState({});
+  const [view, setView] = useState("library");
+  const [cooking, setCooking] = useState(null);
+  const [err, setErr] = useState("");
+
+  const reload = async ()=>{
+    try{
+      let list = await dbLoadRecipes();
+      if(!list.length){ for(const s of SEED){ await dbSaveRecipe(s); } list = await dbLoadRecipes(); }
+      setRecipes(list.map(x=>{ let cats=Array.isArray(x.categories)?x.categories.filter(c=>CATS.includes(c)):(CATS.includes(x.category)?[x.category]:["Other"]); if(!cats.length)cats=["Other"]; const {category,...rest}=x; return {...rest, categories:cats, meals:x.meals||inferMeals(cats), photo:x.photo||null }; }));
+      const p = await dbLoadPlan(); setPlan(p||{});
+    }catch(e){ console.error(e); setErr("Couldn't reach the database. Check your Supabase values and that the tables exist."); setRecipes([]); }
+  };
+
+  useEffect(()=>{ reload();
+    let ch=null;
+    try{ ch = sb.channel("rb-changes").on("postgres_changes",{event:"*",schema:"public",table:"recipes"},()=>reload()).subscribe(); }catch(e){}
+    return ()=>{ if(ch) try{ sb.removeChannel(ch); }catch(e){} };
+  },[]);
+
+  const saveRecipe = async (doc)=>{ setRecipes(prev=>{ const others=(prev||[]).filter(r=>r.id!==doc.id); return [doc,...others]; }); try{ await dbSaveRecipe(doc); }catch(e){ setErr("Save failed — check your connection."); } };
+  const deleteRecipe = async (id)=>{ setRecipes(prev=>(prev||[]).filter(r=>r.id!==id)); try{ await dbDeleteRecipe(id); }catch(e){} };
+  const savePlan = async (next)=>{ setPlan(next); try{ await dbSavePlan(next); }catch(e){} };
+
+  if(recipes===null) return <div className="wrap"><p style={{color:"var(--soft)"}}>Opening your book…</p></div>;
+
+  return (
+    <div className="wrap">
+      {!cooking && (
+        <div className="top">
+          <div><div className="brand">Estee's Pantry</div><div className="sub">Recipe Book</div></div>
+          <div className="nav">
+            {[["library","Library"],["fridge","From my fridge"],["planner","Week"],["add","+ Add"]].map(([k,l])=>(
+              <button key={k} className={view===k?"on":""} onClick={()=>setView(k)}>{l}</button>
+            ))}
+          </div>
+        </div>
+      )}
+      {err && <div className="note" style={{marginBottom:16,background:"rgba(176,106,133,.12)",borderColor:"rgba(176,106,133,.4)",color:"#8a4a63"}}>{err}</div>}
+      {cooking && <CookView recipe={cooking} onClose={()=>setCooking(null)} onSaveRecipe={(d)=>{ saveRecipe(d); setCooking(d); }} />}
+      {!cooking && view==="library" && <Library recipes={recipes} onCook={setCooking} onDelete={deleteRecipe} />}
+      {!cooking && view==="fridge" && <Fridge recipes={recipes} onCook={setCooking} />}
+      {!cooking && view==="planner" && <Planner recipes={recipes} plan={plan} setPlan={savePlan} />}
+      {!cooking && view==="add" && <AddRecipe onSave={(r)=>{ const id="r"+Date.now(); const doc={...r,id}; saveRecipe(doc); setView("library"); }} />}
+    </div>
+  );
+}
+
+function Card({ r, onClick }){
+  const cats = r.categories && r.categories.length ? r.categories : ["Other"];
+  const [bg] = CAT_COLOR[cats[0]] || CAT_COLOR.Other;
+  const topStyle = r.photo
+    ? { backgroundImage:`linear-gradient(to top, rgba(20,40,30,.4), rgba(20,40,30,0) 55%), url(${r.photo})`, backgroundSize:"cover", backgroundPosition:"center", height:150 }
+    : { background: bg };
+  return (
+    <div className="card" onClick={onClick}>
+      <div className="card-top" style={topStyle}>
+        <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+          {cats.map(c=>{ const [,cfg]=CAT_COLOR[c]||CAT_COLOR.Other; return <span key={c} className="chip" style={{background:r.photo?"rgba(255,255,255,.92)":"rgba(255,255,255,.65)",color:cfg}}>{c}</span>; })}
+        </div>
+      </div>
+      <div className="card-body">
+        <h3>{r.title}</h3>
+        <div className="meta"><span><b>{r.timeMinutes}</b> min</span><span><b>{r.servings}</b> serves</span><span><b>{r.ingredients.length}</b> ingr.</span></div>
+      </div>
+    </div>
+  );
+}
+
+function Library({ recipes, onCook, onDelete }){
+  const [cat,setCat]=useState("All"); const [meal,setMeal]=useState("All"); const [band,setBand]=useState("All"); const [q,setQ]=useState("");
+  const list = recipes.filter(r=>
+    (cat==="All"||(r.categories||[]).includes(cat)) &&
+    (meal==="All"||(r.meals||inferMeals(r.categories)).includes(meal)) &&
+    (band==="All"||timeBand(r.timeMinutes)===band) &&
+    (q===""||r.title.toLowerCase().includes(q.toLowerCase())));
+  return (
+    <div>
+      <input className="input" placeholder="Search your recipes…" value={q} onChange={e=>setQ(e.target.value)} style={{marginBottom:16,maxWidth:360}} />
+      <div className="filterbar">
+        <div className="filters"><span className="label">Category</span>
+          <button className={"pill"+(cat==="All"?" on":"")} onClick={()=>setCat("All")}>All</button>
+          {CATS.map(c=><button key={c} className={"pill"+(cat===c?" on":"")} onClick={()=>setCat(c)}>{c}</button>)}
+        </div>
+        <div className="filters"><span className="label">Dish type</span>
+          <button className={"pill"+(meal==="All"?" on":"")} onClick={()=>setMeal("All")}>Any</button>
+          {SLOTS.map(([s,label])=><button key={s} className={"pill"+(meal===s?" on":"")} onClick={()=>setMeal(s)}>{label}</button>)}
+        </div>
+        <div className="filters"><span className="label">Time</span>
+          <button className={"pill"+(band==="All"?" on":"")} onClick={()=>setBand("All")}>Any</button>
+          {BANDS.map(b=><button key={b} className={"pill"+(band===b?" on":"")} onClick={()=>setBand(b)}>{b}</button>)}
+        </div>
+      </div>
+      {list.length===0 ? <div className="empty"><h2>Nothing here yet</h2><p>Try a different filter, or add a recipe.</p></div> :
+        <div className="grid">{list.map(r=>(
+          <div key={r.id} style={{position:"relative"}}>
+            <Card r={r} onClick={()=>onCook(r)} />
+            <button onClick={()=>onDelete(r.id)} title="Remove" style={{position:"absolute",top:8,right:8,background:"rgba(255,255,255,.9)",borderRadius:8,padding:"3px 8px",fontSize:12,fontWeight:700,color:"var(--soft)"}}>✕</button>
+          </div>))}
+        </div>}
+    </div>
+  );
+}
+
+function Fridge({ recipes, onCook }){
+  const [have,setHave]=useState([]); const [input,setInput]=useState(""); const [mode,setMode]=useState("uses");
+  const add=(val)=>{ const v=norm(val); if(v&&!have.includes(v)) setHave([...have,v]); setInput(""); };
+  const suggestions = useMemo(()=>{ const count={}; recipes.forEach(r=>r.ingredients.forEach(i=>{const n=norm(i.name); if(n)count[n]=(count[n]||0)+1;})); return Object.entries(count).sort((a,b)=>b[1]-a[1]).map(e=>e[0]).slice(0,18); },[recipes]);
+  const results = useMemo(()=>{ if(!have.length) return [];
+    return recipes.map(r=>{ const usesAll=have.every(h=>r.ingredients.some(i=>norm(i.name).includes(h)||h.includes(norm(i.name)))); const missing=r.ingredients.filter(i=>!have.some(h=>norm(i.name).includes(h)||h.includes(norm(i.name)))); return {r,usesAll,missing}; })
+      .filter(x=>mode==="uses"?x.usesAll:x.usesAll&&x.missing.length===0).sort((a,b)=>a.missing.length-b.missing.length);
+  },[have,mode,recipes]);
+  return (
+    <div>
+      <div className="panel" style={{marginBottom:22}}>
+        <h2 className="serif" style={{fontSize:24,marginBottom:6}}>What's in your kitchen?</h2>
+        <p style={{color:"var(--soft)",marginBottom:16,fontSize:15}}>Add a few ingredients and I'll find what you can cook.</p>
+        <div style={{display:"flex",gap:8,marginBottom:14}}>
+          <input className="input" placeholder="e.g. tomato, then Enter" value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>e.key==="Enter"&&add(input)} />
+          <button className="btn accent" onClick={()=>add(input)}>Add</button>
+        </div>
+        <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:18}}>
+          {have.map(h=><span key={h} className="tag-add">{h}<button onClick={()=>setHave(have.filter(x=>x!==h))}>✕</button></span>)}
+        </div>
+        <span className="label" style={{display:"block",marginBottom:10}}>Or tap an ingredient you have</span>
+        <div className="sugg" style={{marginBottom:18}}>
+          {suggestions.map(s=><button key={s} className={have.includes(s)?"used":""} onClick={()=>add(s)} disabled={have.includes(s)}>{have.includes(s)?"✓ ":"+ "}{s}</button>)}
+        </div>
+        <div className="filters" style={{margin:0}}>
+          <button className={"pill"+(mode==="uses"?" on":"")} onClick={()=>setMode("uses")}>Uses these (+ extras ok)</button>
+          <button className={"pill"+(mode==="only"?" on":"")} onClick={()=>setMode("only")}>Only what I have</button>
+        </div>
+      </div>
+      {have.length===0 ? <div className="empty"><p>Add ingredients above to begin.</p></div> :
+        results.length===0 ? <div className="empty"><h2>No matches</h2><p>Try "uses these" mode, or fewer ingredients.</p></div> :
+          <div className="grid">{results.map(({r,missing})=>(
+            <div key={r.id} style={{position:"relative"}}>
+              <Card r={r} onClick={()=>onCook(r)} />
+              {missing.length>0 ? <div style={{marginTop:6,fontSize:13,color:"var(--soft)"}}>needs {missing.length} more: {missing.slice(0,3).map(m=>m.name).join(", ")}{missing.length>3?"…":""}</div>
+                : <div style={{marginTop:6,fontSize:13,color:"var(--accent)",fontWeight:600}}>✓ you have everything</div>}
+            </div>))}
+          </div>}
+    </div>
+  );
+}
+
+function dayNote(dishes){
+  if(!dishes.length) return null;
+  const names = dishes.flatMap(d=>d.ingredients.map(i=>norm(i.name))).join(" ");
+  const has=(arr)=>arr.some(w=>names.includes(w));
+  const veg=has(VEG),prot=has(PROT),carb=has(CARB);
+  if(carb&&!veg) return {t:"warn",m:"Leans on starch — a salad or veg side would balance it."};
+  if(!veg) return {t:"warn",m:"Light on vegetables today."};
+  if(!prot) return {t:"warn",m:"Could use a protein."};
+  return {t:"ok",m:"Nicely balanced."};
+}
+
+function Planner({ recipes, plan, setPlan }){
+  const [checked,setChecked]=useState({}); const [copied,setCopied]=useState(false);
+  const getSlot=(day,slot)=>(plan[day]&&typeof plan[day]==="object")?plan[day][slot]:undefined;
+  const setSlot=(day,slot,val)=>{ const cur=(plan[day]&&typeof plan[day]==="object")?plan[day]:{}; setPlan({...plan,[day]:{...cur,[slot]:val}}); };
+  const dishesFor=(day)=>SLOTS.map(([s])=>recipes.find(r=>r.id===getSlot(day,s))).filter(Boolean);
+  const allPlanned=DAYS.flatMap(d=>dishesFor(d));
+  const shopping = useMemo(()=>{ const map={};
+    allPlanned.forEach(r=>r.ingredients.forEach(i=>{ const key=norm(i.name)+"|"+(i.unit||""); if(!map[key])map[key]={name:i.name,unit:i.unit,amount:0,hasNum:true,lines:[]}; if(i.amount==null){map[key].hasNum=false;map[key].lines.push(i.display);} else map[key].amount+=i.amount; }));
+    return Object.values(map).sort((a,b)=>a.name.localeCompare(b.name));
+  },[JSON.stringify(plan),recipes]);
+  const listText = shopping.map(it=>(it.hasNum?`${fmtAmt(it.amount)}${it.unit?" "+it.unit:""} `:"")+it.name+(!it.hasNum&&it.lines.length?` (${it.lines.join("; ")})`:"")).join("\n");
+  const copyList=async()=>{ try{ await navigator.clipboard.writeText(listText); setCopied(true); setTimeout(()=>setCopied(false),1800); }catch(e){} };
+  return (
+    <div>
+      <h2 className="serif" style={{fontSize:24,marginBottom:14}}>This week's plan</h2>
+      <div className="grid" style={{gridTemplateColumns:"repeat(auto-fill,minmax(210px,1fr))",marginBottom:28}}>
+        {DAYS.map(d=>{ const note=dayNote(dishesFor(d));
+          return (
+            <div className="day" key={d}>
+              <h4>{d}</h4>
+              {SLOTS.map(([s,label])=>{ const opts=recipes.filter(r=>(r.meals||inferMeals(r.categories)).includes(s));
+                return (<div className="slot" key={s}><span className="slotlabel">{label}</span>
+                  <select className="daypick" value={getSlot(d,s)||""} onChange={e=>setSlot(d,s,e.target.value)}>
+                    <option value="">—</option>
+                    {opts.map(r=><option key={r.id} value={r.id}>{r.title}</option>)}
+                  </select></div>);
+              })}
+              {note && <div className="daynote" style={{color:note.t==="ok"?"var(--accent)":"var(--gold)"}}>{note.t==="ok"?"🥗 ":"• "}{note.m}</div>}
+            </div>);
+        })}
+      </div>
+      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:6,flexWrap:"wrap",gap:10}}>
+        <h2 className="serif" style={{fontSize:24}}>Shopping list</h2>
+        {shopping.length>0 && <button className="btn pink" onClick={copyList}>{copied?"✓ Copied":"Copy list"}</button>}
+      </div>
+      <p style={{color:"var(--soft)",marginBottom:16,fontSize:14}}>Combined automatically across every meal — duplicate ingredients add together.</p>
+      {shopping.length===0 ? <div className="empty"><p>Pick some meals above and your list builds itself.</p></div> :
+        <div className="panel">
+          {shopping.map((it,k)=>(
+            <div key={k} className={"ing"+(checked[k]?" done":"")} onClick={()=>setChecked({...checked,[k]:!checked[k]})}>
+              <div className="box">{checked[k]?"✓":""}</div>
+              <span style={{fontSize:16}}><b style={{fontWeight:600}}>{it.hasNum?`${fmtAmt(it.amount)}${it.unit?" "+it.unit:""} `:""}</b>{it.name}{!it.hasNum&&it.lines.length?` (${it.lines.join("; ")})`:""}</span>
+            </div>
+          ))}
+        </div>}
+    </div>
+  );
+}
+
+function CookView({ recipe, onClose, onSaveRecipe }){
+  const [serv,setServ]=useState(recipe.servings);
+  const [done,setDone]=useState({});
+  const scale = serv/recipe.servings;
+  const cats = recipe.categories&&recipe.categories.length?recipe.categories:["Other"];
+  const [bg]=CAT_COLOR[cats[0]]||CAT_COLOR.Other;
+  const fileRef=useRef();
+  const photo=recipe.photo;
+  const headStyle = photo
+    ? { backgroundImage:`linear-gradient(to top, rgba(20,40,30,.82), rgba(20,40,30,.2)), url(${photo})`, backgroundSize:"cover", backgroundPosition:"center" }
+    : { background: bg };
+  return (
+    <div>
+      <button className="btn ghost" onClick={onClose} style={{marginBottom:22}}>← Back to library</button>
+      <div style={{borderRadius:20,overflow:"hidden",marginBottom:30,position:"relative",...headStyle}}>
+        <div style={{padding:"30px 32px",paddingTop:photo?130:30}}>
+          <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>{cats.map(c=><span key={c} className="chip" style={{background:"rgba(255,255,255,.78)",color:"var(--accent2)"}}>{c}</span>)}</div>
+          <h1 style={{fontSize:42,fontWeight:600,letterSpacing:"-1px",margin:"12px 0 6px",lineHeight:1.05,color:photo?"#fff":"var(--ink)"}}>{recipe.title}</h1>
+          <div style={{display:"flex",gap:12,fontSize:15,color:photo?"rgba(255,255,255,.9)":"var(--soft)"}}>
+            <span><b style={{fontWeight:600,color:photo?"#fff":"var(--ink)"}}>{recipe.timeMinutes}</b> min</span><span>·</span><span>{timeBand(recipe.timeMinutes)}</span>
+          </div>
+        </div>
+        <div style={{position:"absolute",top:14,right:14,display:"flex",gap:8}}>
+          <button className="btn ghost" style={{background:"rgba(255,255,255,.9)",padding:"6px 12px",fontSize:13}} onClick={()=>fileRef.current.click()}>{photo?"Change photo":"＋ Add photo"}</button>
+          {photo && <button className="btn ghost" style={{background:"rgba(255,255,255,.9)",padding:"6px 12px",fontSize:13}} onClick={()=>onSaveRecipe({...recipe,photo:null})}>Remove</button>}
+          <input ref={fileRef} type="file" accept="image/*" style={{display:"none"}} onChange={e=>compressImage(e.target.files[0],(d)=>onSaveRecipe({...recipe,photo:d}))} />
+        </div>
+      </div>
+      <div className="cook-grid">
+        <div>
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:14,flexWrap:"wrap",gap:10}}>
+            <span className="label">Ingredients</span>
+            <div style={{display:"flex",alignItems:"center",gap:8}}>
+              <span style={{fontSize:13,color:"var(--soft)",fontWeight:600}}>Serves</span>
+              <button className="btn ghost" style={{padding:"4px 12px"}} onClick={()=>setServ(Math.max(1,serv-1))}>−</button>
+              <input className="input" type="number" min="1" value={serv} onChange={e=>setServ(Math.max(1,Math.round(Number(e.target.value)||1)))} style={{width:64,textAlign:"center",padding:"8px 6px",fontWeight:700}} />
+              <button className="btn ghost" style={{padding:"4px 12px"}} onClick={()=>setServ(serv+1)}>+</button>
+              {serv!==recipe.servings && <button className="btn ghost" style={{padding:"6px 10px",fontSize:12}} onClick={()=>setServ(recipe.servings)}>↺ reset</button>}
+            </div>
+          </div>
+          {serv!==recipe.servings && <div style={{fontSize:12,color:"var(--blush-deep)",fontWeight:600,marginBottom:8}}>Scaled from {recipe.servings} → {serv} serves ({(serv/recipe.servings).toFixed(2)}×)</div>}
+          <div className="panel" style={{padding:"8px 18px"}}>
+            {recipe.ingredients.map((i,k)=>(
+              <div key={k} className={"ing"+(done[k]?" done":"")} onClick={()=>setDone({...done,[k]:!done[k]})}>
+                <div className="box">{done[k]?"✓":""}</div>
+                <span>{i.amount!=null?<b style={{fontWeight:600}}>{fmtScaled(i.amount*scale)}{i.unit?" "+i.unit:""} </b>:""}{i.name}</span>
+              </div>
+            ))}
+          </div>
+          {recipe.notes ? <div className="note" style={{marginTop:16}}>📝 {recipe.notes}</div> : null}
+        </div>
+        <div>
+          <span className="label" style={{display:"block",marginBottom:8}}>Method</span>
+          {recipe.steps.map((s,k)=>(<div className="step" key={k}><div className="num">{k+1}</div><p>{s}</p></div>))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const SCHEMA = `{"title":string,"categories":one or more of [${CATS.join(", ")}] as an array,"meals":any of ["breakfast","lunch","dinner","snack","dessert"],"timeMinutes":integer total minutes,"servings":integer,"ingredients":[{"name":"short canonical name e.g. onion","amount":number or null,"unit":"g/ml/cup/tbsp/tsp/can or null (null for whole counts)","display":"the original line"}],"steps":["concise instruction strings"],"notes":"string, may be empty"}`;
+const PORTABLE_PROMPT = `Convert the recipe below into ONE JSON object. Output ONLY the JSON — no explanation, no markdown fences.\n\nFormat: ${SCHEMA}\n\nRecipe to convert (paste the text here, or attach a photo to this chat):\n`;
+
+function AddRecipe({ onSave }){
+  const [pasteIn,setPasteIn]=useState(""); const [copied,setCopied]=useState(false); const [err,setErr]=useState(""); const [draft,setDraft]=useState(null);
+  const importPaste=()=>{ setErr(""); try{ setDraft(normalizeDraft(JSON.parse(pasteIn.replace(/```json|```/g,"").trim()))); }catch(e){ setErr("That doesn't look right — paste the whole JSON block the AI gave you."); } };
+  const copyPrompt=async()=>{ try{ await navigator.clipboard.writeText(PORTABLE_PROMPT); setCopied(true); setTimeout(()=>setCopied(false),1800); }catch(e){} };
+  if(draft) return <Review draft={draft} onCancel={()=>setDraft(null)} onSave={onSave} />;
+  return (
+    <div className="panel" style={{maxWidth:660}}>
+      <h2 className="serif" style={{fontSize:26,marginBottom:6}}>Add a recipe</h2>
+      <p style={{color:"var(--soft)",marginBottom:20}}>Turn any recipe into a clean entry with the help of ChatGPT or Claude — two quick steps.</p>
+      <p style={{color:"var(--soft)",fontSize:14,marginBottom:10}}><b style={{color:"var(--ink)"}}>1.</b> Copy this prompt, open ChatGPT or Claude, paste it in, then add your recipe text or attach a photo and run it:</p>
+      <div className="code">{PORTABLE_PROMPT}</div>
+      <button className="btn ghost" style={{margin:"10px 0 22px"}} onClick={copyPrompt}>{copied?"✓ Copied":"Copy prompt"}</button>
+      <p style={{color:"var(--soft)",fontSize:14,marginBottom:8}}><b style={{color:"var(--ink)"}}>2.</b> Paste the JSON it gives back here:</p>
+      <textarea className="area" placeholder='{ "title": ... }' value={pasteIn} onChange={e=>setPasteIn(e.target.value)} />
+      {err && <div className="note" style={{margin:"12px 0"}}>{err}</div>}
+      <div style={{display:"flex",gap:10,marginTop:12}}>
+        <button className="btn accent" onClick={importPaste} disabled={!pasteIn.trim()}>Import recipe</button>
+        <button className="btn ghost" onClick={()=>setDraft(normalizeDraft({title:"",categories:["Other"],ingredients:[{name:"",amount:null,unit:null,display:""}],steps:[""]}))}>Or enter manually</button>
+      </div>
+    </div>
+  );
+}
+
+function Review({ draft, onCancel, onSave }){
+  const [r,setR]=useState(draft); const [photo,setPhoto]=useState(draft.photo||null); const pRef=useRef();
+  const setIng=(k,field,val)=>setR({...r,ingredients:r.ingredients.map((x,i)=>i===k?{...x,[field]:val}:x)});
+  const toggleMeal=(m)=>setR({...r,meals:r.meals.includes(m)?r.meals.filter(x=>x!==m):[...r.meals,m]});
+  const toggleCat=(c)=>{ const cur=r.categories||[]; setR({...r,categories:cur.includes(c)?cur.filter(x=>x!==c):[...cur,c]}); };
+  return (
+    <div className="panel" style={{maxWidth:680}}>
+      <h2 className="serif" style={{fontSize:26,marginBottom:4}}>Quick check</h2>
+      <p style={{color:"var(--soft)",marginBottom:20}}>A glance to keep your book tidy — tweak anything, then save.</p>
+      <span className="label">Title</span>
+      <input className="input" style={{margin:"6px 0 16px"}} value={r.title} onChange={e=>setR({...r,title:e.target.value})} />
+      <div style={{display:"flex",gap:12,marginBottom:16,flexWrap:"wrap"}}>
+        <div style={{width:100}}><span className="label">Minutes</span><input className="input" type="number" style={{marginTop:6}} value={r.timeMinutes} onChange={e=>setR({...r,timeMinutes:Number(e.target.value)})} /></div>
+        <div style={{width:100}}><span className="label">Serves</span><input className="input" type="number" style={{marginTop:6}} value={r.servings} onChange={e=>setR({...r,servings:Number(e.target.value)})} /></div>
+      </div>
+      <span className="label">Category <span style={{textTransform:"none",letterSpacing:0,fontWeight:500,color:"var(--soft)"}}>— pick one or more</span></span>
+      <div style={{display:"flex",gap:8,flexWrap:"wrap",margin:"8px 0 18px"}}>
+        {CATS.map(c=><span key={c} className={"check"+((r.categories||[]).includes(c)?" on":"")} onClick={()=>toggleCat(c)}>{(r.categories||[]).includes(c)?"✓ ":""}{c}</span>)}
+      </div>
+      <span className="label">Dish type <span style={{textTransform:"none",letterSpacing:0,fontWeight:500,color:"var(--soft)"}}>— pick one or more</span></span>
+      <div style={{display:"flex",gap:8,flexWrap:"wrap",margin:"8px 0 18px"}}>
+        {SLOTS.map(([s,label])=><span key={s} className={"check"+(r.meals.includes(s)?" on":"")} onClick={()=>toggleMeal(s)}>{r.meals.includes(s)?"✓ ":""}{label}</span>)}
+      </div>
+      <span className="label">Dish photo (optional)</span>
+      <div style={{margin:"8px 0 18px"}}>
+        {photo && <img src={photo} alt="dish" style={{width:"100%",maxHeight:200,objectFit:"cover",borderRadius:12,marginBottom:10}} />}
+        <button className="btn ghost" onClick={()=>pRef.current.click()}>{photo?"Change photo":"Choose photo"}</button>
+        {photo && <button className="btn ghost" style={{marginLeft:8}} onClick={()=>setPhoto(null)}>Remove</button>}
+        <input ref={pRef} type="file" accept="image/*" style={{display:"none"}} onChange={e=>compressImage(e.target.files[0],setPhoto)} />
+      </div>
+      <span className="label">Ingredients</span>
+      <div style={{margin:"8px 0 16px"}}>
+        {r.ingredients.map((i,k)=>(
+          <div key={k} style={{display:"flex",gap:6,marginBottom:6}}>
+            <input className="input" style={{width:70}} placeholder="amt" value={i.amount??""} onChange={e=>setIng(k,"amount",e.target.value===""?null:Number(e.target.value))} />
+            <input className="input" style={{width:80}} placeholder="unit" value={i.unit??""} onChange={e=>setIng(k,"unit",e.target.value||null)} />
+            <input className="input" placeholder="name" value={i.name} onChange={e=>setIng(k,"name",e.target.value)} />
+            <button className="btn ghost" onClick={()=>setR({...r,ingredients:r.ingredients.filter((_,i2)=>i2!==k)})}>✕</button>
+          </div>
+        ))}
+        <button className="btn ghost" style={{marginTop:4}} onClick={()=>setR({...r,ingredients:[...r.ingredients,{name:"",amount:null,unit:null,display:""}]})}>+ ingredient</button>
+      </div>
+      <span className="label">Steps</span>
+      <div style={{margin:"8px 0 20px"}}>
+        {r.steps.map((s,k)=>(
+          <div key={k} style={{display:"flex",gap:8,marginBottom:6}}>
+            <span className="num" style={{fontSize:20,minWidth:26}}>{k+1}</span>
+            <textarea className="area" style={{minHeight:50}} value={s} onChange={e=>setR({...r,steps:r.steps.map((x,i)=>i===k?e.target.value:x)})} />
+            <button className="btn ghost" onClick={()=>setR({...r,steps:r.steps.filter((_,i2)=>i2!==k)})}>✕</button>
+          </div>
+        ))}
+        <button className="btn ghost" style={{marginTop:4}} onClick={()=>setR({...r,steps:[...r.steps,""]})}>+ step</button>
+      </div>
+      <div style={{display:"flex",gap:10}}>
+        <button className="btn accent" onClick={()=>onSave({...r,categories:(r.categories&&r.categories.length)?r.categories:["Other"],photo:photo||null,ingredients:r.ingredients.filter(i=>i.name.trim()),steps:r.steps.filter(s=>s.trim())})}>Save to book</button>
+        <button className="btn ghost" onClick={onCancel}>Back</button>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
