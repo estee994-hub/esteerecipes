@@ -429,8 +429,10 @@ function Planner({ recipes, plan, setPlan }){
 }
 
 function CookView({ recipe, onClose, onSaveRecipe }){
+  const [editing,setEditing]=useState(false);
   const [serv,setServ]=useState(recipe.servings);
   const [done,setDone]=useState({});
+  if(editing) return <Review draft={JSON.parse(JSON.stringify(recipe))} editing={true} onCancel={()=>setEditing(false)} onSave={(d)=>{ onSaveRecipe({...d,id:recipe.id}); setEditing(false); }} />;
   const scale = serv/recipe.servings;
   const cats = recipe.categories&&recipe.categories.length?recipe.categories:["Other"];
   const [bg]=CAT_COLOR[cats[0]]||CAT_COLOR.Other;
@@ -441,7 +443,10 @@ function CookView({ recipe, onClose, onSaveRecipe }){
     : { background: bg };
   return (
     <div>
-      <button className="btn ghost" onClick={onClose} style={{marginBottom:22}}>← Back to library</button>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:22,gap:10,flexWrap:"wrap"}}>
+        <button className="btn ghost" onClick={onClose}>← Back to library</button>
+        <button className="btn pink" onClick={()=>setEditing(true)}>✎ Edit recipe</button>
+      </div>
       <div style={{borderRadius:20,overflow:"hidden",marginBottom:30,position:"relative",...headStyle}}>
         <div style={{padding:"30px 32px",paddingTop:photo?130:30}}>
           <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>{cats.map(c=><span key={c} className="chip" style={{background:"rgba(255,255,255,.78)",color:"var(--accent2)"}}>{c}</span>)}</div>
@@ -514,15 +519,15 @@ function AddRecipe({ onSave }){
   );
 }
 
-function Review({ draft, onCancel, onSave }){
+function Review({ draft, onCancel, onSave, editing }){
   const [r,setR]=useState(draft); const [photo,setPhoto]=useState(draft.photo||null); const pRef=useRef();
   const setIng=(k,field,val)=>setR({...r,ingredients:r.ingredients.map((x,i)=>i===k?{...x,[field]:val}:x)});
   const toggleMeal=(m)=>setR({...r,meals:r.meals.includes(m)?r.meals.filter(x=>x!==m):[...r.meals,m]});
   const toggleCat=(c)=>{ const cur=r.categories||[]; setR({...r,categories:cur.includes(c)?cur.filter(x=>x!==c):[...cur,c]}); };
   return (
     <div className="panel" style={{maxWidth:680}}>
-      <h2 className="serif" style={{fontSize:26,marginBottom:4}}>Quick check</h2>
-      <p style={{color:"var(--soft)",marginBottom:20}}>A glance to keep your book tidy — tweak anything, then save.</p>
+      <h2 className="serif" style={{fontSize:26,marginBottom:4}}>{editing?"Edit recipe":"Quick check"}</h2>
+      <p style={{color:"var(--soft)",marginBottom:20}}>{editing?"Change anything below, then save — every device updates.":"A glance to keep your book tidy — tweak anything, then save."}</p>
       <span className="label">Title</span>
       <input className="input" style={{margin:"6px 0 16px"}} value={r.title} onChange={e=>setR({...r,title:e.target.value})} />
       <div style={{display:"flex",gap:12,marginBottom:16,flexWrap:"wrap"}}>
@@ -568,8 +573,8 @@ function Review({ draft, onCancel, onSave }){
         <button className="btn ghost" style={{marginTop:4}} onClick={()=>setR({...r,steps:[...r.steps,""]})}>+ step</button>
       </div>
       <div style={{display:"flex",gap:10}}>
-        <button className="btn accent" onClick={()=>onSave({...r,categories:(r.categories&&r.categories.length)?r.categories:["Other"],photo:photo||null,ingredients:r.ingredients.filter(i=>i.name.trim()),steps:r.steps.filter(s=>s.trim())})}>Save to book</button>
-        <button className="btn ghost" onClick={onCancel}>Back</button>
+        <button className="btn accent" onClick={()=>onSave({...r,categories:(r.categories&&r.categories.length)?r.categories:["Other"],photo:photo||null,ingredients:r.ingredients.filter(i=>i.name.trim()),steps:r.steps.filter(s=>s.trim())})}>{editing?"Save changes":"Save to book"}</button>
+        <button className="btn ghost" onClick={onCancel}>{editing?"Cancel":"Back"}</button>
       </div>
     </div>
   );
